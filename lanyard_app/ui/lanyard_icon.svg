@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 248" fill="none">
+    <defs>
+        <clipPath id="card-clip">
+            <rect x="72" y="104" width="104" height="144" rx="12"/>
+        </clipPath>
+    </defs>
+
+    <!-- Steeper, narrower V-Shaped Lanyard Strap -->
+    <!-- Pulled inward at the top and dropping sharply -->
+    <path d="M 44 -20 C 74 40, 110 84, 124 84 C 138 84, 174 40, 204 -20" 
+          stroke="#10B981" stroke-width="20" stroke-linecap="round" fill="none"/>
+    
+    <!-- ID Card Base -->
+    <rect x="72" y="104" width="104" height="144" rx="12" fill="#EDEDED"/>
+    
+    <!-- Bottom Security Bar (Emerald) -->
+    <rect x="72" y="216" width="104" height="32" fill="#10B981" clip-path="url(#card-clip)"/>
+
+    <!-- Internal ID Layout (Perfectly symmetrical margins) -->
+    <!-- Photo Area -->
+    <rect x="86" y="136" width="28" height="36" rx="4" fill="#0A0A0A"/> 
+    <!-- Text Line 1 (Name) -->
+    <rect x="124" y="140" width="38" height="8" rx="4" fill="#0A0A0A"/> 
+    <!-- Text Line 2 (Role) -->
+    <rect x="124" y="154" width="24" height="6" rx="3" fill="#888888"/> 
+    <!-- Text Line 3 (Clearance Level) -->
+    <rect x="124" y="166" width="30" height="6" rx="3" fill="#888888"/> 
+
+    <!-- Card Cutout Hole (Slightly wider than the clip) -->
+    <rect x="110" y="110" width="28" height="8" rx="4" fill="#141414"/>
+
+    <!-- Metal Clip (Drawn last so it overlaps the card and sits INSIDE the hole) -->
+    <rect x="114" y="74" width="20" height="42" rx="6" fill="#A0A6AD"/>
+</svg>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanyard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="app-container" style="display: none;">
+        
+        <!-- SIDEBAR -->
+        <aside>
+            <div id="main-sidebar-header" class="sidebar-header" onclick="if(activeProjectId) closeProject();">
+                <div id="header-icon-container">
+                    <!-- Changed to .png for consistency with your python code -->
+                    <img src="lanyard_icon.svg" alt="Lanyard" class="brand-icon">
+                </div>
+                <div class="brand-text-group">
+                    <div class="brand-title" id="header-title">Lanyard</div>
+                    <div class="brand-sub" id="header-desc">Encrypted via local OS keychain.</div>
+                </div>
+            </div>
+
+            <!-- Inner Nav Area -->
+            <div class="sidebar-nav-area">
+                <!-- Added ID to reliably target this tab -->
+                <div id="nav-projects" class="nav-item active" onclick="switchView('projects', this)">
+                    <span class="icon-slot text-accent" data-icon="folder"></span> Projects
+                </div>
+
+                <div style="height: 1px; background: var(--border); margin-bottom: 4px;"></div>
+
+                <div class="nav-item" onclick="switchView('vault', this)">
+                    <span class="icon-slot" data-icon="key"></span>
+                    API Keys
+                </div>
+                <div class="nav-item" onclick="switchView('licenses', this)">
+                    <span class="icon-slot" data-icon="shield"></span>
+                    Licenses
+                </div>
+                <div class="nav-item" onclick="switchView('passwords', this)">
+                    <span class="icon-slot" data-icon="lock"></span>
+                    Passwords
+                </div>
+                <div class="nav-item" onclick="switchView('env', this)">
+                    <span class="icon-slot" data-icon="fileCode"></span>
+                    Environment Variables
+                </div>
+                <div class="nav-item" onclick="switchView('crypto', this)">
+                    <span class="icon-slot" data-icon="link"></span>
+                    Key Pairs
+                </div>
+
+                <div style="flex:1;"></div>
+
+                <div class="nav-item" onclick="switchView('settings')">
+                    <span class="icon-slot" data-icon="settings"></span>
+                    Settings
+                </div>
+                <div class="nav-item danger" onclick="window.pywebview.api.fully_quit()">
+                    <span class="icon-slot" data-icon="quit"></span>
+                    Quit Application
+                </div>
+            </div>
+        </aside>
+        
+        <!-- DYNAMIC VIEWS CONTAINER -->
+        <div id="views-wrapper">
+
+            <!-- PROJECTS DASHBOARD -->
+            <main id="view-projects" class="view-section active">
+                <div class="content-scroll" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); align-content: start;" id="projects-list"></div>
+                <button class="fab-add" onclick="openDynamicModal('project')" title="New Project">
+                    <span class="icon-slot" data-icon="plus" data-size="lg"></span>
+                </button>
+            </main>
+            
+            <main id="view-vault" class="view-section">
+                <div class="content-scroll" id="vault-list"></div>
+                <button class="fab-add" onclick="openDynamicModal('api_key')" title="Add API Key">
+                    <span class="icon-slot" data-icon="plus" data-size="lg"></span>
+                </button>
+            </main>
+
+            <main id="view-licenses" class="view-section">
+                <div class="content-scroll" id="licenses-list"></div>
+                <button class="fab-add" onclick="openDynamicModal('license')" title="Add License">
+                    <span class="icon-slot" data-icon="plus" data-size="lg"></span>
+                </button>
+            </main>
+
+            <main id="view-passwords" class="view-section">
+                <div class="content-scroll" id="passwords-list"></div>
+                <button class="fab-add" onclick="openDynamicModal('password')" title="Add Password">
+                    <span class="icon-slot" data-icon="plus" data-size="lg"></span>
+                </button>
+            </main>
+
+            <main id="view-env" class="view-section">
+                <div class="content-scroll" id="env-list"></div>
+                <button class="fab-add" onclick="openDynamicModal('env')" title="Add Environment File">
+                    <span class="icon-slot" data-icon="plus" data-size="lg"></span>
+                </button>
+            </main>
+
+            <main id="view-crypto" class="view-section">
+                <div class="content-scroll" id="crypto-list"></div>
+                <button class="fab-add" onclick="openDynamicModal('crypto')" title="Generate Key Pair">
+                    <span class="icon-slot" data-icon="plus" data-size="lg"></span>
+                </button>
+            </main>
+
+            <main id="view-settings" class="view-section">
+                <div class="content-scroll" style="max-width: 600px;">
+                    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 32px;">System Settings</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Interface Theme</label>
+                        <select id="theme-select" onchange="changeTheme(this.value)">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                            <option value="midnight">Midnight Blue</option>
+                            <option value="nord">Nord</option>
+                            <option value="dracula">Dracula</option>
+                            <option value="solarized">Solarized</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 24px; padding-top: 32px; border-top: 1px solid var(--border);">
+                        <label class="form-label text-danger">Danger Zone</label>
+                        <button class="btn btn-secondary text-danger" style="border-color: var(--danger);" onclick="triggerPinReset()">Reset Master PIN</button>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- LOGIN / SETUP OVERLAY -->
+    <div id="login-overlay" class="overlay active">
+        <div class="modal" style="width: 400px; text-align: center; padding: 48px 40px;">
+            <img src="lanyard_icon.png" alt="Lanyard" style="width: 80px; height: 80px; margin: 0 auto 24px; display: block;">
+            <h2 style="margin-bottom: 12px; font-size: 24px; font-weight: 700; letter-spacing: -0.02em;" id="login-title">Lanyard Vault</h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 32px;" id="login-desc">Enter your Master PIN to unlock the interface.</p>
+            
+            <input type="text" id="pin-input" placeholder="••••••••" style="-webkit-text-security: disc; text-align: center; font-size: 28px; letter-spacing: 6px; padding-left: 6px; margin-bottom: 16px; font-family: monospace;" autofocus>
+            <button id="pin-btn" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 14px; padding: 12px;" onclick="submitPin()">Unlock Vault</button>
+            <div id="pin-error" style="color: var(--danger); font-size: 12px; margin-top: 12px; height: 16px; font-weight: 600;"></div>
+            
+            <!-- Cancel button (Only visible during resets) -->
+            <div id="pin-cancel" style="display: none; margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer;" onclick="cancelPinAction()">Cancel</div>
+        </div>
+    </div>
+
+    <!-- UNIFIED DYNAMIC MODAL (Handles Add & Edit for ALL types) -->
+    <div id="dynamic-modal" class="overlay">
+        <div class="modal" style="width: 540px;">
+            <div class="modal-header" id="dynamic-modal-header">Add Item</div>
+            <div class="modal-body">
+                <label class="form-label">Title / Name</label>
+                <input type="text" id="dynamic-title" placeholder="Title" style="margin-bottom: 24px;">
+                
+                <!-- Category Specific UI Injected Here -->
+                <div id="dynamic-category-ui"></div>
+
+                <label class="form-label" style="margin-top: 24px;">Fields</label>
+                <div class="pill-container" id="dynamic-pills"></div>
+                
+                <div id="dynamic-fields-container" style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <!-- Dynamic inputs injected here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDynamicModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveDynamicItem()">Save Securely</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IPC ACCESS REQUEST MODAL -->
+    <div id="ipc-modal" class="overlay">
+        <div class="modal" style="width: 420px;">
+            <div style="padding: 20px 32px 20px 16px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface-hover);">
+                <img src="lanyard_icon.svg" alt="Lanyard" style="width: 40px; height: 40px; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <h2 style="font-size: 18px; font-weight: 800; letter-spacing: -0.02em; margin: 0; color: var(--text-main);">Access Request</h2>
+                    <p style="color: var(--text-muted); font-size: 12px; margin: 0;">An application is requesting secure data.</p>
+                </div>
+            </div>
+            <div class="modal-body" style="background: var(--bg-app); padding: 24px 32px;">
+                <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border);">
+                    <span style="color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase;">Application</span>
+                    <span id="req-app-name" style="font-weight: 800; font-size: 14px;">Unknown App</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0;">
+                    <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; padding-right: 16px;">
+                        <span style="color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; white-space: nowrap;">Requested Data</span>
+                        <span id="req-reason" style="font-size: 11px; color: var(--text-muted); font-style: italic; display: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help;"></span>
+                    </div>
+                    
+                    <!-- Shown during Direct Request -->
+                    <span id="req-key-title" style="font-family: monospace; color: var(--accent); font-weight: bold; font-size: 14px; background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 2px;">Unknown Key</span>
+                    
+                    <!-- Shown during Link Request -->
+                    <select id="req-key-select" style="display: none; width: 60%; font-family: monospace; font-size: 13px; font-weight: 600; color: var(--accent); border-color: var(--border); background: var(--bg-surface-hover);"></select>
+                </div>
+                
+                <label class="chk-row" style="margin-top: 24px;">
+                    <input type="checkbox" id="chk-always-allow">
+                    <span style="font-size: 13px; color: var(--text-muted);">Always allow <strong style="color: var(--text-main);"><span id="req-app-name-2">this app</span></strong> to access this key.</span>
+                </label>
+
+                <!-- NEW SECURITY WARNING -->
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); padding: 12px; border-radius: 4px; margin-top: 24px;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--danger); text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        <span class="icon-slot text-danger" data-icon="shield" style="width: 12px; height: 12px;"></span> Security Warning
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">Always verify you are running the application requesting this data. Malicious scripts can attempt to spoof app names.</div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 20px 32px;">
+                <button class="btn btn-secondary" style="flex: 1; justify-content: center; padding: 12px;" onclick="denyAccess()">Deny</button>
+                <button class="btn btn-primary" style="flex: 1; justify-content: center; padding: 12px;" onclick="approveAccess()">Approve Access</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
