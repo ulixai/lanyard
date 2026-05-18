@@ -9,6 +9,17 @@ let activeProjectId = null;
 let currentIpcReqId = null;
 let pendingIpcAuth = null;
 
+function escapeHtml(unsafe) {
+    if (!unsafe) return "";
+    return unsafe
+         .toString()
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
 // --- ICON FACTORY (Lucide SVGs) ---
 const Icons = {
     eye: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
@@ -302,13 +313,13 @@ function openProject(id) {
     
     // Inject both normal and hover states for the title
     document.getElementById('header-title').innerHTML = `
-        <span class="state-normal">${p.title}</span>
+        <span class="state-normal">${escapeHtml(p.title)}</span>
         <span class="state-hover">Home</span>
     `;
     
     // Inject both normal and hover states for the description
     document.getElementById('header-desc').innerHTML = `
-        <span class="state-normal">${p.description || "Project Workspace"}</span>
+        <span class="state-normal">${escapeHtml(p.description) || "Project Workspace"}</span>
         <span class="state-hover text-accent">Return to Projects Dashboard</span>
     `;
     
@@ -375,14 +386,14 @@ function renderProjects() {
             <div class="card-header" style="margin-bottom: 8px;">
                 <div class="card-title-group">
                     <div class="card-icon text-accent">${Icons.folder}</div>
-                    <div class="card-title">${p.title}</div>
+                    <div class="card-title">${escapeHtml(p.title)}</div>
                 </div>
                 <div class="card-actions" onclick="event.stopPropagation()">
                     <button onclick="editProject('${p.id}')" title="Edit Project">${Icons.edit}</button>
                     <button onclick="deleteProject('${p.id}')" title="Delete Project">${Icons.trash}</button>
                 </div>
             </div>
-            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">${p.description || "No description."}</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">${escapeHtml(p.description) || "No description."}</div>
             <div style="font-size: 11px; font-weight: 700; color: var(--accent); background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block;">
                 ${itemCount} Items
             </div>
@@ -460,7 +471,7 @@ function renderCategoryList(containerId, filterCategory, defaultIcon, emptyText,
             <div class="card-header">
                 <div class="card-title-group">
                     <div class="card-icon text-accent">${renderIcon}</div>
-                    <div class="card-title">${item.title}</div>
+                    <div class="card-title">${escapeHtml(item.title)}</div>
                 </div>
                 <div class="card-actions">
                     <button onclick="editItem('${item.id}', '${item.category || 'api_key'}')" title="Edit Item">${Icons.edit}</button>
@@ -784,7 +795,7 @@ function _renderIpcModal(reqId, appName, targetId, reason, reqCategory) {
             if (baseItems.length > 0) {
                 optionsHtml += `<optgroup label="Base Vault">`;
                 baseItems.forEach(item => {
-                    optionsHtml += `<option value="${item.id}">${item.title}</option>`;
+                    optionsHtml += `<option value="${escapeHtml(item.id)}">${escapeHtml(item.title)}</option>`;
                 });
                 optionsHtml += `</optgroup>`;
             }
@@ -793,9 +804,9 @@ function _renderIpcModal(reqId, appName, targetId, reason, reqCategory) {
                 projectsData.forEach(proj => {
                     const projItems = filteredVault.filter(i => i.project_id === proj.id);
                     if (projItems.length > 0) {
-                        optionsHtml += `<optgroup label="📁 ${proj.title}">`;
+                        optionsHtml += `<optgroup label="📁 ${escapeHtml(proj.title)}">`;
                         projItems.forEach(item => {
-                            optionsHtml += `<option value="${item.id}">${item.title}</option>`;
+                            optionsHtml += `<option value="${escapeHtml(item.id)}">${escapeHtml(item.title)}</option>`;
                         });
                         optionsHtml += `</optgroup>`;
                     }

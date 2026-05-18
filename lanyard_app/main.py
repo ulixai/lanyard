@@ -2,6 +2,7 @@ import webview
 import threading
 import os
 import sys
+import logging
 from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 from lanyard_app.vault import Vault
@@ -18,7 +19,7 @@ def load_tray_icon():
         try:
             return Image.open(png_path)
         except Exception as e:
-            print(f"Failed to load PNG: {e}")
+            logging.warning(f"Failed to load PNG: {e}")
 
     # Fallback
     image = Image.new('RGBA', (64, 64), color=(0, 0, 0, 0)) # Transparent background

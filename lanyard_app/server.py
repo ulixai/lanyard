@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from threading import Event
 import uuid
 import logging
+import os
+import pathlib
+from werkzeug.serving import make_server
 
 app = Flask(__name__)
 
@@ -18,6 +21,7 @@ def handle_ipc():
     target_id = data.get('target_id')
     reason = data.get('reason')
     category = data.get('category')
+    timeout = data.get('timeout', 300.0)
 
     # 1. Check if "Always Allow" is active (Only possible if they provided a target_id)
     if target_id and controller_ref and controller_ref.vault.check_app_permission(app_name, target_id):
@@ -35,7 +39,7 @@ def handle_ipc():
         controller_ref.trigger_approval_modal(req_id, app_name, target_id, reason, category)
 
     # PAUSE HTTP execution for THIS specific request
-    event.wait(timeout=60.0)
+    event.wait(timeout=float(timeout))
 
     # Fetch response and cleanup
     response = active_requests.get(req_id, {}).get("data")
@@ -57,9 +61,22 @@ def start_ipc_server(controller):
     global controller_ref
     controller_ref = controller
     
-    # Disable flask logging for a clean console
+    # Configure basic logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    # Disable flask werkzeug access logs for a clean console
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
     
-    # Run silently, bound ONLY to localhost
-    app.run(host="127.0.0.1", port=49152, debug=False, use_reloader=False)
+    # Run bound to localhost on a random port
+    server = make_server("127.0.0.1", 0, app)
+    port = server.port
+    
+    # Write port to ~/.lanyard/port
+    lanyard_dir = pathlib.Path.home() / ".lanyard"
+    lanyard_dir.mkdir(parents=True, exist_ok=True)
+    with open(lanyard_dir / "port", "w") as f:
+        f.write(str(port))
+        
+    logging.info(f"Lanyard IPC server started dynamically on port {port}")
+    server.serve_forever()
