@@ -38,6 +38,7 @@ const Icons = {
     plus: `<svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
     copy: `<svg class="svg-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`,
     ghost: `<svg class="svg-icon xl" viewBox="0 0 24 24"><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"></path></svg>`,
+    lifeBuoy: `<svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line><line x1="14.83" y1="9.17" x2="18.36" y2="5.64"></line><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line></svg>`,
 };
 
 function injectIcons() {
@@ -102,9 +103,7 @@ window.addEventListener('pywebviewready', async () => {
     }
 });
 
-// --- NAVIGATION ---
 function switchView(viewId, element) {
-    // If they click the "Projects" tab while inside a project, back out cleanly
     if (viewId === 'projects' && activeProjectId) {
         closeProject();
         return; // closeProject handles the view switch
@@ -117,8 +116,6 @@ function switchView(viewId, element) {
     const viewEl = document.getElementById('view-' + viewId);
     if (viewEl) viewEl.classList.add('active');
 }
-
-
 
 // --- PIN LOGIC STATE MACHINE ---
 function setPinMode(mode) {
@@ -134,7 +131,6 @@ function setPinMode(mode) {
     err.innerText = '';
     document.getElementById('login-overlay').classList.add('active'); 
 
-    // Hide cancel button by default
     cancel.style.display = 'none';
 
     if (mode === 'login') {
@@ -195,14 +191,12 @@ async function submitPin() {
 
     if (!pin) { err.innerText = "PIN cannot be empty."; return; }
 
-    // STATE: Standard Login
     if (pinMode === 'login') {
         const valid = await pywebview.api.verify_pin(pin);
         if (valid) unlockApp();
         else { err.innerText = "Incorrect PIN."; input.value = ""; }
     } 
     
-    // STATE: Authorizing a Reset from Settings
     else if (pinMode === 'reset_auth') {
         const valid = await pywebview.api.verify_pin(pin);
         if (valid) {
@@ -213,13 +207,11 @@ async function submitPin() {
         }
     }
 
-    // STATE: First entry of a new PIN
     else if (pinMode === 'create_1' || pinMode === 'reset_1') {
         tempPin = pin;
         setPinMode(pinMode === 'create_1' ? 'create_2' : 'reset_2');
     } 
     
-    // STATE: Confirmation of a new PIN
     else if (pinMode === 'create_2' || pinMode === 'reset_2') {
         if (pin === tempPin) {
             await pywebview.api.set_pin(pin);
@@ -228,7 +220,6 @@ async function submitPin() {
             unlockApp(); 
         } else {
             err.innerText = "PINs do not match. Try again.";
-            // Boot them back to the first step after a short delay
             setTimeout(() => {
                 setPinMode(pinMode === 'create_2' ? 'create_1' : 'reset_1');
             }, 1500);
@@ -240,7 +231,6 @@ async function submitPin() {
         if (valid) {
             document.getElementById('login-overlay').classList.remove('active');
             
-            // PIN was correct! Show the actual request modal now.
             _renderIpcModal(pendingIpcAuth.reqId, pendingIpcAuth.appName, pendingIpcAuth.targetId, pendingIpcAuth.reason, pendingIpcAuth.reqCategory);
             pendingIpcAuth = null;
         } else {
@@ -255,7 +245,6 @@ function triggerPinReset() {
 }
 
 function cancelPinAction() {
-    // If they cancel during an IPC request, explicitly deny the app!
     if (pinMode === 'ipc_auth' && pendingIpcAuth) {
         pywebview.api.respond_to_ipc(pendingIpcAuth.reqId, false, "", pendingIpcAuth.appName, false);
         pendingIpcAuth = null;
@@ -274,7 +263,6 @@ async function unlockApp() {
     loadVault();
 }
 
-// --- VAULT RENDERING ---
 async function loadVault() {
     projectsData = await pywebview.api.get_projects();
     vaultData = await pywebview.api.get_vault_items();
@@ -286,9 +274,9 @@ async function loadVault() {
 function renderCurrentContext() {
     const isProject = !!activeProjectId;
 
-    // We pass both the category and the project ID so the lists filter correctly.
     renderCategoryList('vault-list', 'api_key', Icons.key, isProject ? "No API keys in this project." : "No base API keys.", !isProject, isProject ? activeProjectId : null);
     renderCategoryList('passwords-list', 'password', Icons.lock, isProject ? "No passwords in this project." : "No base passwords.", !isProject, isProject ? activeProjectId : null);
+    renderCategoryList('recovery-list', 'recovery', Icons.lifeBuoy, isProject ? "No recovery codes in this project." : "No base recovery codes.", !isProject, isProject ? activeProjectId : null);
     renderCategoryList('env-list', 'env', Icons.fileCode, isProject ? "No environment variables in this project." : "No base environment variables.", !isProject, isProject ? activeProjectId : null);
     renderCategoryList('crypto-list', 'crypto', Icons.link, isProject ? "No key pairs in this project." : "No base key pairs.", !isProject, isProject ? activeProjectId : null);
     renderCategoryList('licenses-list', 'license', Icons.shield, isProject ? "No licenses in this project." : "No base software licenses.", !isProject, isProject ? activeProjectId : null);
@@ -311,19 +299,16 @@ function openProject(id) {
     const p = projectsData.find(x => x.id === id);
     if (!p) return;
     
-    // Inject both normal and hover states for the title
     document.getElementById('header-title').innerHTML = `
         <span class="state-normal">${escapeHtml(p.title)}</span>
         <span class="state-hover">Home</span>
     `;
     
-    // Inject both normal and hover states for the description
     document.getElementById('header-desc').innerHTML = `
         <span class="state-normal">${escapeHtml(p.description) || "Project Workspace"}</span>
         <span class="state-hover text-accent">Return to Projects Dashboard</span>
     `;
     
-    // Inject both normal and hover states for the icon
     document.getElementById('header-icon-container').innerHTML = `
         <div class="state-normal" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; background:var(--bg-surface-hover); border: 1px solid var(--border); color:var(--accent); flex-shrink: 0;">${Icons.folder}</div>
         <div class="state-hover" style="display:none; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; background:var(--accent); color:#000; flex-shrink: 0;">${Icons.arrowLeft}</div>
@@ -332,11 +317,7 @@ function openProject(id) {
     const headerEl = document.getElementById('main-sidebar-header');
     headerEl.classList.add('back-hover');
     headerEl.title = "Click to go back to Projects";
-
-    // Re-render context lists so they display this project's items
     renderCurrentContext();
-    
-    // Automatically switch them into the API Keys view for this project
     switchView('vault', document.querySelector('.nav-item[onclick*="vault"]'));
 }
 
@@ -351,16 +332,11 @@ function closeProject() {
     const headerEl = document.getElementById('main-sidebar-header');
     headerEl.classList.remove('back-hover');
     headerEl.title = "";
-
-    // Re-render context lists back to base-level
     renderCurrentContext();
-
-    // Switch view back to projects dashboard
     switchView('projects', document.getElementById('nav-projects'));
 }
 
 function renderProjectWorkspace() {
-    // Render Unified List for this project
     renderCategoryList('ws-list', null, null, "Project is empty.", false, activeProjectId);
 }
 
@@ -370,13 +346,11 @@ function renderProjects() {
     list.innerHTML = "";
 
     if (projectsData.length === 0) {
-        // Drop grid layout so Flexbox centering works
         list.style.display = 'flex';
         list.innerHTML = createEmptyState("No projects created yet.", "Click the + button to organize your keys.");
         return;
     }
 
-    // Restore Grid Layout
     list.style.display = 'grid';
     
     projectsData.forEach(p => {
@@ -409,7 +383,6 @@ function renderCategoryList(containerId, filterCategory, defaultIcon, emptyText,
 
     let items = vaultData;
     
-    // UPDATED FILTERING: Ensure we filter by category EVEN WHEN inside a project
     if (forceProjectId) {
         items = items.filter(i => i.project_id === forceProjectId && (i.category || 'api_key') === filterCategory);
     } else if (baseOnly) {
@@ -426,6 +399,7 @@ function renderCategoryList(containerId, filterCategory, defaultIcon, emptyText,
     
     const getCatIcon = (cat) => {
         if (cat === 'password') return Icons.lock;
+        if (cat === 'recovery') return Icons.lifeBuoy;
         if (cat === 'env') return Icons.fileCode;
         if (cat === 'crypto') return Icons.link;
         if (cat === 'license') return Icons.shield;
@@ -510,7 +484,6 @@ async function deleteItem(id) {
     }
 }
 
-// --- UNIFIED DYNAMIC MODAL (ADD & EDIT) ---
 function getCategoryConfig(category) {
     const cfg = {
         project: { title: "Project", pills: ['Description'] },
@@ -518,7 +491,8 @@ function getCategoryConfig(category) {
         password: { title: "Password", pills: ['Username', 'Password', 'Website URL', 'Notes'] },
         license: { title: "Software License", pills: ['License Key', 'Registered Email', 'Software Version'] },
         env: { title: "Environment Variables", pills: ['Custom Key/Value'] },
-        crypto: { title: "Cryptographic Key Pair", pills: [] } // Handled specially
+        crypto: { title: "Cryptographic Key Pair", pills: [] },
+        recovery: { title: "Recovery Codes", pills: ['Account Name/Email', 'Backup Codes', 'Notes'] } 
     };
     return cfg[category] || cfg.api_key;
 }
@@ -566,7 +540,6 @@ async function editItem(id, category) {
     document.getElementById('dynamic-fields-container').innerHTML = "";
     setupModalUI(category, cfg);
 
-    // Fetch secure payload and populate
     const meta = vaultData.find(i => i.id === id);
     if (!meta) return;
     document.getElementById('dynamic-title').value = meta.title;
@@ -586,12 +559,10 @@ function setupModalUI(category, cfg) {
     pillsContainer.innerHTML = "";
     customUiContainer.innerHTML = "";
 
-    // Generate Standard Pills
     cfg.pills.forEach(pill => {
         pillsContainer.innerHTML += `<button class="pill" onclick="addField('${pill}')">+ ${pill}</button>`;
     });
 
-    // Inject Custom UI for special categories
     if (category === 'env') {
         customUiContainer.innerHTML = `
             <button class="btn btn-secondary" onclick="triggerEnvUpload()" style="width: 100%; justify-content: center; margin-bottom: 24px;">
@@ -636,19 +607,22 @@ function addField(label, value = "") {
     let keyAttr = '';
     
     if (isCustom) {
-        // INLINE EDITABLE KEY NAME
         labelHtml = `<input type="text" class="custom-key-input" placeholder="TYPE FIELD NAME HERE...">`;
         keyAttr = `data-custom="true"`;
     } else {
-        // STANDARD FIXED LABEL
         labelHtml = `<label class="form-label text-accent" style="margin-bottom: 8px;">${label}</label>`;
         keyAttr = `data-key="${label}"`;
     }
 
-    // STRICTLY 1-LINE INPUT
-    const inputHtml = `<input type="text" class="dynamic-input" ${keyAttr} value="${value}" placeholder="Paste secret here...">`;
+    const isMultiline = label.includes("Codes") || label.includes("Notes") || label.includes("Private Key") || label.includes("Public Key");
+    
+    let inputHtml = "";
+    if (isMultiline) {
+        inputHtml = `<textarea class="dynamic-input" ${keyAttr} placeholder="Paste multi-line secret here..." style="height: 100px;">${value}</textarea>`;
+    } else {
+        inputHtml = `<input type="text" class="dynamic-input" ${keyAttr} value="${value}" placeholder="Paste secret here...">`;
+    }
 
-    // Wrapped in a distinct box so the X button aligns perfectly
     const html = `
     <div class="dynamic-field-group" style="position: relative; background: var(--bg-app); padding: 16px; border: 1px solid var(--border); border-radius: 4px;">
         ${labelHtml}
@@ -659,11 +633,10 @@ function addField(label, value = "") {
     container.insertAdjacentHTML('beforeend', html);
 }
 
-// --- SPECIAL CATEGORY LOGIC ---
 async function triggerEnvUpload() {
     const res = await pywebview.api.load_env_file();
     if (res.status === 'success') {
-        document.getElementById('dynamic-fields-container').innerHTML = ""; // Clear existing
+        document.getElementById('dynamic-fields-container').innerHTML = "";
         Object.keys(res.data).forEach(key => addField(key, res.data[key]));
         Toast.show("Environment file parsed.", "success");
     } else if (res.status === 'error') {
@@ -675,7 +648,7 @@ async function generateKeys() {
     const algo = document.getElementById('crypto-algo').value;
     const res = await pywebview.api.generate_keypair(algo);
     if (res.status === 'success') {
-        document.getElementById('dynamic-fields-container').innerHTML = ""; // Clear existing
+        document.getElementById('dynamic-fields-container').innerHTML = "";
         addField("Public Key", res.public_key);
         addField("Private Key", res.private_key);
         Toast.show("Secure Key Pair Generated.", "success");
@@ -685,22 +658,17 @@ async function generateKeys() {
 }
 
 function addManualKeypair() {
-    // Clear any existing fields just in case they clicked generate first
     document.getElementById('dynamic-fields-container').innerHTML = ""; 
-    
-    // Spawn the two empty inputs
     addField("Public Key", "");
     addField("Private Key", "");
 }
 
-// --- SAVE ROUTINE ---
 async function saveDynamicItem() {
     const title = document.getElementById('dynamic-title').value.trim();
     if (!title) { Toast.show("Please enter a Title.", "error"); return; }
 
     const inputs = document.querySelectorAll('.dynamic-input');
     
-    // Project saves are special (No Keyring, just metadata)
     if (currentDynamicCategory === 'project') {
         let desc = "";
         inputs.forEach(inp => { if (inp.getAttribute('data-key') === 'Description') desc = inp.value.trim(); });
@@ -711,7 +679,6 @@ async function saveDynamicItem() {
         return;
     }
 
-    // Standard Vault Item Save
     if (inputs.length === 0) { Toast.show("Please add at least one field.", "error"); return; }
 
     const fields = {};
@@ -730,7 +697,6 @@ async function saveDynamicItem() {
     if (hasError) { Toast.show("Custom fields must have a name.", "error"); return; }
     if (Object.keys(fields).length === 0) { Toast.show("Fields cannot be empty.", "error"); return; }
 
-    // Pass activeProjectId so it gets bound to the current project if we are inside one!
     await pywebview.api.save_vault_item(editingItemId, title, fields, currentDynamicCategory, activeProjectId);
     
     closeDynamicModal();
@@ -743,12 +709,10 @@ async function saveDynamicItem() {
 window.showAccessRequest = function(reqId, appName, targetId, reason, reqCategory) {
     // 1. Store the request in memory
     pendingIpcAuth = { reqId, appName, targetId, reason, reqCategory };
-    
     // 2. Force the Master PIN overlay to appear first!
     setPinMode('ipc_auth');
 }
 
-// 3. This is the old showAccessRequest code, renamed. It is called by submitPin()!
 function _renderIpcModal(reqId, appName, targetId, reason, reqCategory) {
     currentIpcReqId = reqId; 
     
@@ -832,7 +796,6 @@ function approveAccess() {
     const appName = modal.getAttribute('data-app');
     const alwaysAllow = document.getElementById('chk-always-allow').checked;
     
-    // If data-target exists, it's a Direct Request. Otherwise, get from dropdown.
     let targetId = modal.getAttribute('data-target');
     if (!targetId) {
         targetId = document.getElementById('req-key-select').value;

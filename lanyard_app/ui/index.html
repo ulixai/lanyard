@@ -45,6 +45,10 @@
                     <span class="icon-slot" data-icon="lock"></span>
                     Passwords
                 </div>
+                <div class="nav-item" onclick="switchView('recovery', this)">
+                    <span class="icon-slot" data-icon="lifeBuoy"></span>
+                    Recovery Codes
+                </div>
                 <div class="nav-item" onclick="switchView('env', this)">
                     <span class="icon-slot" data-icon="fileCode"></span>
                     Environment Variables
@@ -95,6 +99,13 @@
             <main id="view-passwords" class="view-section">
                 <div class="content-scroll" id="passwords-list"></div>
                 <button class="fab-add" onclick="openDynamicModal('password')" title="Add Password">
+                    <span class="icon-slot" data-icon="plus" data-size="lg"></span>
+                </button>
+            </main>
+
+            <main id="view-recovery" class="view-section">
+                <div class="content-scroll" id="recovery-list"></div>
+                <button class="fab-add" onclick="openDynamicModal('recovery')" title="Add Recovery Codes">
                     <span class="icon-slot" data-icon="plus" data-size="lg"></span>
                 </button>
             </main>
