@@ -1,12 +1,10 @@
-/* IMPORT PROFESSIONAL TYPEFACE */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    /* Utilizing Inter for a highly technical, trustworthy feel */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* 1. ULIX DARK THEME (Default) */
+/* 1. DARK */
 [data-theme="dark"] {
     --bg-app: #000000;
     --bg-surface: #0a0a0a;
@@ -19,7 +17,7 @@
     --danger: #ef4444;
 }
 
-/* 2. ULIX LIGHT THEME */
+/* 2. LIGHT */
 [data-theme="light"] {
     --bg-app: #f8fafc;
     --bg-surface: #ffffff;
@@ -32,7 +30,7 @@
     --danger: #ef4444;
 }
 
-/* 3. MIDNIGHT THEME */
+/* 3. MIDNIGHT */
 [data-theme="midnight"] {
     --bg-app: #020617;
     --bg-surface: #0f172a;
@@ -45,7 +43,7 @@
     --danger: #f87171;
 }
 
-/* 4. NORD (Arctic Dark) */
+/* 4. NORD */
 [data-theme="nord"] {
     --bg-app: #2e3440;
     --bg-surface: #3b4252;
@@ -58,7 +56,7 @@
     --danger: #bf616a;
 }
 
-/* 5. DRACULA (Deep Purple) */
+/* 5. DRACULA */
 [data-theme="dracula"] {
     --bg-app: #282a36;
     --bg-surface: #44475a;
@@ -71,7 +69,7 @@
     --danger: #ff5555;
 }
 
-/* 6. SOLARIZED WARM (Soft Light) */
+/* 6. SOLARIZED */
 [data-theme="solarized"] {
     --bg-app: #fdf6e3;
     --bg-surface: #eee8d5;
@@ -79,7 +77,7 @@
     --border: rgba(0, 0, 0, 0.1);
     --text-main: #073642;
     --text-muted: #586e75;
-    --accent: #d97706; /* Warm Amber */
+    --accent: #d97706;
     --accent-hover: #b45309;
     --danger: #dc322f;
 }
@@ -99,7 +97,6 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- CUSTOM SCROLLBARS --- */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -118,13 +115,12 @@ body {
     background: var(--text-muted);
 }
 
-/* Firefox support (just in case) */
+/* Firefox support */
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
 }
 
-/* SVG ICON FACTORY STYLES */
 .svg-icon {
     width: 16px;
     height: 16px;
@@ -141,7 +137,6 @@ body {
 .text-accent { color: var(--accent); }
 .text-danger { color: var(--danger); }
 
-/* LAYOUT */
 #app-container {
     flex: 1;
     display: flex;
@@ -149,7 +144,6 @@ body {
     position: relative;
 }
 
-/* SIDEBAR */
 aside {
     width: 240px;
     background: transparent;
@@ -218,7 +212,6 @@ aside {
     font-weight: 800;
     letter-spacing: -0.04em;
     color: var(--text-main);
-    /* Truncation */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -231,7 +224,6 @@ aside {
     font-weight: 600;
     color: var(--text-muted);
     line-height: 1.2;
-    /* Truncation */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -256,7 +248,6 @@ aside {
 .nav-item.active { background: rgba(16, 185, 129, 0.1); color: var(--accent); border-left: 3px solid var(--accent); }
 .nav-item.danger:hover { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-/* MULTI-VIEW ROUTING */
 #views-wrapper {
     flex: 1;
     display: flex;
@@ -281,7 +272,6 @@ aside {
     z-index: 5;
 }
 
-/* CONTENT AREAS */
 .content-scroll {
     padding: 32px 32px 72px 32px; 
     overflow-y: auto;
@@ -292,7 +282,6 @@ aside {
     min-height: 100%; 
 }
 
-/* FLOATING ACTION BUTTON (FAB) */
 .fab-add {
     position: absolute;
     bottom: 14px;
@@ -321,7 +310,6 @@ aside {
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
-/* CARDS & COMPONENTS */
 .card {
     background: var(--bg-surface);
     border: 1px solid var(--border);
@@ -359,29 +347,27 @@ aside {
 
 .secret-row {
     display: flex; align-items: center; gap: 16px; margin-top: 12px;
-    width: 100%; /* Ensure it bounds to the card */
+    width: 100%; 
 }
 .secret-label {
     width: 120px; font-size: 11px; font-weight: 700; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 0.05em; text-align: right;
-    flex-shrink: 0; /* Prevent label from squishing */
+    flex-shrink: 0; 
 }
 .secret-input {
     flex: 1; height: 40px; 
-    min-width: 0; /* CRITICAL: Allows flex child to truncate instead of stretch */
+    min-width: 0;
     background: var(--bg-app); border: 1px solid var(--border);
     border-radius: 4px; padding: 0 16px;
     color: var(--text-muted); font-family: monospace; font-size: 13px;
     
-    /* Text Truncation */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 38px; /* Vertically center the text */
+    line-height: 38px; 
     user-select: text;
 }
 
-/* BUTTONS & INPUTS */
 .btn {
     padding: 10px 20px; font-size: 13px; font-weight: 600;
     border-radius: 4px; cursor: pointer; transition: all 0.2s;
@@ -421,7 +407,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .form-group { margin-bottom: 24px; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 0.05em; }
 
-/* PILLS */
 .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .pill {
     background: var(--bg-surface-hover); border: 1px dashed var(--text-muted);
@@ -430,7 +415,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 }
 .pill:hover { border-color: var(--accent); color: var(--accent); background: rgba(16,185,129,0.1); }
 
-/* OVERLAYS (Modals & Login) */
 .overlay {
     position: absolute; inset: 0;
     background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
@@ -448,7 +432,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .modal-body { padding: 24px; flex: 1; overflow-y: auto; min-height: 0; }
 .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); background: var(--bg-app); display: flex; justify-content: flex-end; gap: 12px; }
 
-/* CHECKBOX */
 .chk-row { display: flex; align-items: center; gap: 10px; cursor: pointer; margin-top: 16px; }
 .chk-row input[type="checkbox"] {
     appearance: none; width: 18px; height: 18px; padding: 0; margin: 0;
@@ -463,7 +446,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-/* --- TOAST NOTIFICATIONS --- */
 #toast-container {
     position: fixed;
     bottom: 24px;
@@ -472,7 +454,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
     flex-direction: column;
     gap: 8px;
     z-index: 9999;
-    pointer-events: none; /* Let clicks pass through the container */
+    pointer-events: none; 
 }
 
 .toast {
@@ -489,7 +471,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
     pointer-events: auto;
     
-    /* Animation */
     animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transition: opacity 0.3s, transform 0.3s;
 }

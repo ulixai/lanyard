@@ -10,10 +10,6 @@ from lanyard_app.server import start_ipc_server
 from lanyard_app.api import LanyardJSAPI
 
 def load_tray_icon():
-    """
-    Attempts to load the custom PNG for the system tray.
-    Falls back to a clean generated icon if missing.
-    """
     png_path = os.path.join(os.path.dirname(__file__), "ui", "lanyard_icon.png")
     if os.path.exists(png_path):
         try:
@@ -22,7 +18,7 @@ def load_tray_icon():
             logging.warning(f"Failed to load PNG: {e}")
 
     # Fallback
-    image = Image.new('RGBA', (64, 64), color=(0, 0, 0, 0)) # Transparent background
+    image = Image.new('RGBA', (64, 64), color=(0, 0, 0, 0))
     d = ImageDraw.Draw(image)
     d.ellipse((4, 4, 60, 60), fill=(16, 185, 129)) 
     d.text((26, 20), "L", fill=(255, 255, 255), font_size=24) 
@@ -81,12 +77,10 @@ class LanyardController:
             self.window.on_top = True
             self.window.on_top = False
             
-            # Safely handle Nones for Javascript injection
             safe_target_id = target_id if target_id else ""
             safe_reason = reason.replace("'", "\\'") if reason else ""
             safe_category = category if category else ""
             
-            # Pass exactly 4 parameters: reqId, appName, targetId, reason
             js_code = f"window.showAccessRequest('{req_id}', '{app_name}', '{safe_target_id}', '{safe_reason}', '{safe_category}')"
             self.window.evaluate_js(js_code)
             

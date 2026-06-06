@@ -7,12 +7,10 @@ import pathlib
 from werkzeug.serving import make_server
 
 app = Flask(__name__)
-
-# Dictionary to handle concurrent IPC requests independently
 active_requests = {}
 controller_ref = None 
-
 @app.route('/lanyard-ipc', methods=['POST'])
+
 def handle_ipc():
     global active_requests
     data = request.json
@@ -60,15 +58,9 @@ def resolve_request(req_id, response_data):
 def start_ipc_server(controller):
     global controller_ref
     controller_ref = controller
-    
-    # Configure basic logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
-    # Disable flask werkzeug access logs for a clean console
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
-    
-    # Run bound to localhost on a random port
     server = make_server("127.0.0.1", 0, app)
     port = server.port
     

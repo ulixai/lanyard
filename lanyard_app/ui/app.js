@@ -20,7 +20,6 @@ function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
 }
 
-// --- ICON FACTORY (Lucide SVGs) ---
 const Icons = {
     eye: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
     eyeOff: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`,
@@ -52,7 +51,6 @@ function injectIcons() {
 }
 document.addEventListener("DOMContentLoaded", injectIcons);
 
-// --- TOAST SYSTEM & CLIPBOARD ---
 const Toast = {
     show: function(message, type = 'success') {
         let container = document.getElementById('toast-container');
@@ -81,7 +79,6 @@ function copyToClipboard(text) {
     });
 }
 
-// --- THEME LOGIC ---
 function changeTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
     localStorage.setItem('lanyard_theme', themeName);
@@ -93,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (selector) selector.value = savedTheme;
 });
 
-// --- STATE ---
 window.addEventListener('pywebviewready', async () => {
     const hasPin = await pywebview.api.has_pin();
     if (!hasPin) {
@@ -707,9 +703,7 @@ async function saveDynamicItem() {
 
 // --- ACCESS ---
 window.showAccessRequest = function(reqId, appName, targetId, reason, reqCategory) {
-    // 1. Store the request in memory
     pendingIpcAuth = { reqId, appName, targetId, reason, reqCategory };
-    // 2. Force the Master PIN overlay to appear first!
     setPinMode('ipc_auth');
 }
 
@@ -743,7 +737,6 @@ function _renderIpcModal(reqId, appName, targetId, reason, reqCategory) {
         
         document.getElementById('ipc-modal').setAttribute('data-target', targetId);
     } else {
-        // --- LINK REQUEST MODE (Tree Structure Dropdown) ---
         titleEl.style.display = 'none';
         selectEl.style.display = 'inline-block';
         

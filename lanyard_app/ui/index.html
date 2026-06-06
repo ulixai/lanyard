@@ -15,7 +15,6 @@
         <aside>
             <div id="main-sidebar-header" class="sidebar-header" onclick="if(activeProjectId) closeProject();">
                 <div id="header-icon-container">
-                    <!-- Changed to .png for consistency with your python code -->
                     <img src="lanyard_icon.svg" alt="Lanyard" class="brand-icon">
                 </div>
                 <div class="brand-text-group">
@@ -26,7 +25,6 @@
 
             <!-- Inner Nav Area -->
             <div class="sidebar-nav-area">
-                <!-- Added ID to reliably target this tab -->
                 <div id="nav-projects" class="nav-item active" onclick="switchView('projects', this)">
                     <span class="icon-slot text-accent" data-icon="folder"></span> Projects
                 </div>
@@ -161,12 +159,11 @@
             <button id="pin-btn" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 14px; padding: 12px;" onclick="submitPin()">Unlock Vault</button>
             <div id="pin-error" style="color: var(--danger); font-size: 12px; margin-top: 12px; height: 16px; font-weight: 600;"></div>
             
-            <!-- Cancel button (Only visible during resets) -->
             <div id="pin-cancel" style="display: none; margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer;" onclick="cancelPinAction()">Cancel</div>
         </div>
     </div>
 
-    <!-- UNIFIED DYNAMIC MODAL (Handles Add & Edit for ALL types) -->
+    <!-- DYNAMIC MODAL -->
     <div id="dynamic-modal" class="overlay">
         <div class="modal" style="width: 540px;">
             <div class="modal-header" id="dynamic-modal-header">Add Item</div>
@@ -174,15 +171,12 @@
                 <label class="form-label">Title / Name</label>
                 <input type="text" id="dynamic-title" placeholder="Title" style="margin-bottom: 24px;">
                 
-                <!-- Category Specific UI Injected Here -->
                 <div id="dynamic-category-ui"></div>
 
                 <label class="form-label" style="margin-top: 24px;">Fields</label>
                 <div class="pill-container" id="dynamic-pills"></div>
                 
-                <div id="dynamic-fields-container" style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border); padding-top: 20px;">
-                    <!-- Dynamic inputs injected here -->
-                </div>
+                <div id="dynamic-fields-container" style="display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--border); padding-top: 20px;"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeDynamicModal()">Cancel</button>
