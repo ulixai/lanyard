@@ -34,7 +34,6 @@ class LanyardJSAPI:
             if always_allow: self._vault.grant_app_permission(app_name, target_id)
             secret = self._vault.get_secret_payload(target_id)
             if secret: 
-                # ADDED target_id HERE so the pip package can save it!
                 response_data = {"status": "success", "data": secret, "target_id": target_id}
             else: 
                 response_data = {"status": "error", "error": "OS Decryption failed."}
@@ -49,7 +48,6 @@ class LanyardJSAPI:
         self._ctrl.quit_app()
 
     def load_env_file(self):
-        """Opens a file dialog to select a .env file and parses its contents."""
         if not self._ctrl.window: return {"status": "error"}
         file_types = ('Environment Files (*.env;*.txt)', 'All files (*.*)')
         result = self._ctrl.window.create_file_dialog(10, allow_multiple=False, file_types=file_types) # 10 = OPEN dialog
@@ -65,7 +63,6 @@ class LanyardJSAPI:
                     if not line or line.startswith('#'): continue
                     if '=' in line:
                         key, val = line.split('=', 1)
-                        # Strip surrounding quotes if present
                         val = val.strip()
                         if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
                             val = val[1:-1]
@@ -75,7 +72,6 @@ class LanyardJSAPI:
             return {"status": "error", "message": str(e)}
 
     def generate_keypair(self, algorithm="ed25519"):
-        """Generates a secure asymmetric key pair."""
         try:
             if algorithm == "ed25519":
                 private_key = ed25519.Ed25519PrivateKey.generate()

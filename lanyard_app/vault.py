@@ -34,7 +34,6 @@ class Vault:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
-    # --- ENCRYPTION & PIN Management ---
     def _derive_key(self, pin: str, salt: bytes) -> bytes:
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
