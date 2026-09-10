@@ -24,17 +24,3 @@ The old vault's UI preferences are not imported from its separate webview storag
 Upgrade `lanyard` to `>=0.2.0,<0.3` alongside the desktop app. Existing Python method names/return shapes remain available, but the protocol now requires a generated pairing identity stored in the client's OS credential store. Skudio 0.9.15 contains the matching integration.
 
 See `docs/DESKTOP_API.md` for discovery, pairing, consent, errors and HTTP limits. The app listens only on loopback, rejects browser-originated requests and never exposes its inventory to external clients. Every item can be shared once or granted to a specific paired app while the vault is unlocked; revoke access in Settings.
-
-## Validation and releases
-
-```
-cargo test -p lanyard-core
-cargo check --workspace
-npm run build
-```
-
-The desktop shell still needs native GUI/keychain testing on each supported OS. Automated core tests exercise encryption, PIN changes, legacy import, metadata tampering, chunked secrets, permissions, .env parsing and key generation. Feature coverage is recorded in `docs/FEATURE_PARITY.md`.
-
-`vendor/ulix-update/RELEASES.md` explains the shared updater, signing keys, build workflow and website publication. No production signing secret is included. Configure artifact public keys before building public releases.
-
-Start the desktop app with `npm run tauri dev` (`npm run dev` alone starts only Vite). Windows startup diagnostics are written to `%LOCALAPPDATA%\ULIX\Lanyard\logs\startup.log`; startup errors also display a native dialog. Rebuild release executables after applying source repairs.
