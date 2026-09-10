@@ -1,0 +1,25 @@
+[package]
+name = "lanyard"
+version = "0.2.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+[lib]
+name = "lanyard_app"
+crate-type = ["staticlib", "cdylib", "rlib"]
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+[dependencies]
+tauri-plugin-single-instance = "2"
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+lanyard-core = { path = "../crates/lanyard-core", features = ["native"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+axum = "0.7"
+uuid = { version = "1", features = ["v4"] }
+dirs = "6"
+fs2 = "0.4"
+tempfile = "3"
+tauri-plugin-ulix-update = { path = "../vendor/ulix-update/crates/tauri-plugin-ulix-update" }
+ulix-update-core = { path = "../vendor/ulix-update/crates/ulix-update-core" }
+tauri-plugin-clipboard-manager = "2"

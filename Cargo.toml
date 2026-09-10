@@ -1,0 +1,4 @@
+[workspace]
+members = ["crates/lanyard-core", "src-tauri"]
+default-members = ["crates/lanyard-core"]
+resolver = "2"

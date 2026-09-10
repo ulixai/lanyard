@@ -1,0 +1,23 @@
+[package]
+name = "tauri-plugin-ulix-update"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+links = "tauri-plugin-ulix-update"
+description = "Reusable ULIX desktop update coordinator"
+[build-dependencies]
+tauri-plugin = { version = "2", features = ["build"] }
+[dependencies]
+tauri = { version = "2" }
+tauri-plugin-updater = "2"
+ulix-update-core = { path = "../ulix-update-core" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["sync", "fs"] }
+tempfile = "3"
+fs2 = "0.4"
+sha2 = "0.10"
+hex = "0.4"
+
+[dev-dependencies]
+tauri = { version = "2", features = ["test"] }

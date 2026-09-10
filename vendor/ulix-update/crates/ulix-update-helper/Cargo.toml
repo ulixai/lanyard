@@ -1,0 +1,10 @@
+[package]
+name = "ulix-update-helper"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Portable ULIX update handoff"
+[dependencies]
+ulix-update-core = { path = "../ulix-update-core" }
+serde_json = "1"
+fs2 = "0.4"

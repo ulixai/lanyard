@@ -1,0 +1,4 @@
+[workspace]
+members = ["crates/ulix-update-core", "crates/ulix-update-helper", "crates/tauri-plugin-ulix-update"]
+default-members = ["crates/ulix-update-core", "crates/ulix-update-helper"]
+resolver = "2"

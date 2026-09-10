@@ -1,25 +1,42 @@
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+node_modules
 
-# Byte-compiled / optimized / DLL files
+
+# Dependencies and generated builds (including nested Rust workspaces)
+node_modules/
+target/
+dist/
+dist-*/
+build/
+release-output/
+coverage/
+.vite/
+.next/
+*.tsbuildinfo
+src-tauri/gen/schemas/
+
+# Python tools and caches
 __pycache__/
 *.py[cod]
-*$py.class
-
-# IDEs
-.vscode/
-.idea/
-
-# Distribution / packaging
-dist/
-build/
 *.egg-info/
+.venv/
+.venv-*/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Development
-run.bat
+# Local configuration and signing material
+.env
+.env.*
+!.env.example
+!.env.sample
+*.p12
+*.pfx
+/ulix-updater.key
+
+# OS and diagnostic files
+.DS_Store
+Thumbs.db
+*.log
+
+# Keep Cargo.lock, package-lock.json, app icons, source, and vendor/ulix-update.

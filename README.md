@@ -1,21 +1,40 @@
-## Lanyard
-Lanyard is a local Bring Your Own Key (BYOK) manager that stores sensitive data (API Keys, 
-Passwords, Cryptographic pairs) securely inside the native OS Keychain.
+# Lanyard 0.2.0
 
-This project was created simply to store API keys and other sensitive data 
-in the OS Keychain for easy access during development.
+ULIX's desktop credential vault, rebuilt with Tauri 2, Rust and React. Windows, macOS and Linux source/build paths are included. Python applications use SDK 0.2; any desktop application or CLI can use the documented local HTTP protocol.
 
-We trust ourselves with our keys, and y'know, sometimes we need to copy/paste them again. We didn't 
-want to store them in a txt file, we don't like having to log into an account on a website 
-to *maybe* be able to copy our keys again (a lot of the time, you get to see it once), and by golly, 
-we just like dealing with a nice desktop app.
+## Development
 
-But that got us thinking, "what if we could just add a button to our *actual* project to 
-import a key directly from Lanyard itself?". So that's why we made the Lanyard Python SDK (lanyard-py). 
+Install Node 22+, stable Rust, and [Tauri's native prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS. Linux also needs an unlocked Secret Service keyring for real vault storage.
 
-Want to add Lanyard support to your app? Just `pip install lanyard` to add the 0-dependency library 
-and streamline the greater BYOK ecosystem with us!
+```
+npm ci
+npm run tauri dev
+```
 
-This project is free and open-source. If you'd like to contribute, be our guest! We'd love to have you contribute :)
+The default theme is ULIX Dark. Settings offers ULIX Light, ten additional presets, a custom palette editor, PIN rotation, app permission management, and software updates. Credentials stay in the native OS credential store, encrypted with a random master key wrapped by a PIN/passphrase-derived key. Metadata integrity is authenticated. No plaintext fallback is used if the credential store is unavailable.
 
-> The ULIX Team
+## Existing Python desktop vault
+
+On first launch, Lanyard detects the old `config.json` / `meta.json` in the original OS data location and offers import. Run under the same OS user/keychain account and supply the original PIN plus a new PIN/passphrase. Import verifies and decrypts every item before committing the new vault; the old vault files and keychain entries remain untouched. Project/item IDs are retained. Old grants based only on application names are intentionally discarded, so apps must pair again.
+
+The old vault's UI preferences are not imported from its separate webview storage. You can select a preset or recreate a palette in the new theme editor. Do not delete the original vault until you have reviewed the imported credentials. A forgotten old PIN or unreadable old keychain entry cannot be bypassed by import.
+
+## SDK and other languages
+
+Upgrade `lanyard` to `>=0.2.0,<0.3` alongside the desktop app. Existing Python method names/return shapes remain available, but the protocol now requires a generated pairing identity stored in the client's OS credential store. Skudio 0.9.15 contains the matching integration.
+
+See `docs/DESKTOP_API.md` for discovery, pairing, consent, errors and HTTP limits. The app listens only on loopback, rejects browser-originated requests and never exposes its inventory to external clients. Every item can be shared once or granted to a specific paired app while the vault is unlocked; revoke access in Settings.
+
+## Validation and releases
+
+```
+cargo test -p lanyard-core
+cargo check --workspace
+npm run build
+```
+
+The desktop shell still needs native GUI/keychain testing on each supported OS. Automated core tests exercise encryption, PIN changes, legacy import, metadata tampering, chunked secrets, permissions, .env parsing and key generation. Feature coverage is recorded in `docs/FEATURE_PARITY.md`.
+
+`vendor/ulix-update/RELEASES.md` explains the shared updater, signing keys, build workflow and website publication. No production signing secret is included. Configure artifact public keys before building public releases.
+
+Start the desktop app with `npm run tauri dev` (`npm run dev` alone starts only Vite). Windows startup diagnostics are written to `%LOCALAPPDATA%\ULIX\Lanyard\logs\startup.log`; startup errors also display a native dialog. Rebuild release executables after applying source repairs.

@@ -1,0 +1,22 @@
+{
+  "name": "@ulix/update-react",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./style.css": "./src/style.css"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "@tauri-apps/api": "^2"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "dependencies": {
+    "@fontsource/geist-sans": "^5.2.5",
+    "@fontsource/geist-mono": "^5.2.8",
+    "@fontsource/playfair-display": "^5.2.8"
+  }
+}

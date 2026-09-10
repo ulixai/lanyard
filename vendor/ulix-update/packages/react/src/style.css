@@ -1,0 +1,136 @@
+.ulix-update-overlay,
+.ulix-update-panel {
+  --uu-bg: var(--background, #000);
+  --uu-fg: var(--foreground, #fff);
+  --uu-muted: var(--muted-foreground, #737373);
+  --uu-border: color-mix(in srgb, var(--uu-fg) 12%, transparent);
+  --uu-accent: var(--accent, #10b981);
+  color: var(--uu-fg);
+  font-family: Geist, "Geist Sans", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ulix-update-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  background: #000a;
+  padding: 20px;
+}
+.ulix-update-overlay > div {
+  width: min(100%, 540px);
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  border: 1px solid var(--uu-border);
+}
+.ulix-update-panel {
+  background: var(--uu-bg);
+  min-height: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.ulix-update-panel header {
+  border-bottom: 1px solid var(--uu-border);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ulix-update-label {
+  font-family: "Geist Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--uu-muted);
+  text-transform: uppercase;
+}
+.ulix-update-content {
+  padding: 28px;
+  flex: 1;
+}
+.ulix-update-content h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 46px;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  margin: 0 0 20px;
+}
+.ulix-update-content h2 em {
+  color: var(--uu-accent);
+}
+.ulix-update-content h3 {
+  font-size: 18px;
+  margin: 24px 0 8px;
+}
+.ulix-update-content p {
+  margin: 10px 0;
+}
+.ulix-update-notes {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 170px;
+  overflow: auto;
+}
+.ulix-update-error {
+  border-left: 2px solid #e05c5c;
+  padding-left: 12px;
+}
+.ulix-update-notice {
+  border-left: 2px solid var(--uu-accent);
+  padding-left: 12px;
+}
+.ulix-update-panel button,
+.ulix-update-trigger {
+  font: inherit;
+  background: transparent;
+  color: inherit;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+}
+.ulix-update-panel button:focus-visible,
+.ulix-update-trigger:focus-visible {
+  outline: 2px solid var(--uu-accent);
+  outline-offset: -4px;
+}
+.ulix-update-panel button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.ulix-update-panel footer {
+  border-top: 1px solid var(--uu-border);
+  display: flex;
+  flex-direction: column;
+}
+.ulix-update-panel footer button {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 28px;
+  text-align: left;
+}
+.ulix-update-panel footer button + button {
+  border-top: 1px solid var(--uu-border);
+}
+.ulix-update-panel footer button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--uu-fg) 5%, transparent);
+}
+.ulix-update-panel .ulix-update-primary {
+  color: var(--uu-accent);
+}
+.ulix-update-trigger {
+  font-size: 11px;
+  padding: 8px 12px;
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+}
+.ulix-update-panel progress {
+  width: 100%;
+  height: 3px;
+  accent-color: var(--uu-accent);
+  margin-top: 20px;
+}
